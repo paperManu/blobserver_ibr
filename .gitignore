@@ -1,4 +1,10 @@
 *.swp
+*.lo
+*.o
+*.deps
+*.libs
+*.la
+Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache/
@@ -6,11 +12,16 @@ compile
 config.guess
 config.h.in
 config.h.in~
+config.h
+config.log
+config.status
 config.sub
 configure
 depcomp
 install-sh
+libtool
 ltmain.sh
+stamp-h1
 m4/
 missing
 src/Makefile.in
