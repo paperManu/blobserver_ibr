@@ -44,6 +44,15 @@ atom::Message Actuator_Template::detect(vector< Capture_Ptr > pCaptures)
 }
 
 /*************/
+vector<Capture_Ptr> Actuator_Template::getOutput() const
+{
+    vector<Capture_Ptr> outputVec;
+    outputVec.push_back(mCapture);
+
+    return outputVec;
+}
+
+/*************/
 void Actuator_Template::setParameter(atom::Message pMessage)
 {
     setBaseParameter(pMessage);
