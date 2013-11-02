@@ -1,37 +1,37 @@
-#include "template.h"
+#include "ibr.h"
 
 using namespace std;
 
-std::string Actuator_Template::mClassName = "Actuator_Template";
-std::string Actuator_Template::mDocumentation = "N/A";
-unsigned int Actuator_Template::mSourceNbr = 1;
+std::string Actuator_IBR::mClassName = "Actuator_Ibr";
+std::string Actuator_IBR::mDocumentation = "N/A";
+unsigned int Actuator_IBR::mSourceNbr = 1;
 
 /*************/
-Actuator_Template::Actuator_Template()
+Actuator_IBR::Actuator_IBR()
 {
     make();
 }
 
 /*************/
-Actuator_Template::Actuator_Template(int pParam)
+Actuator_IBR::Actuator_IBR(int pParam)
 {
     make();
 }
 
 /*************/
-void Actuator_Template::make()
+void Actuator_IBR::make()
 {
     mOutputBuffer = cv::Mat::zeros(480, 640, CV_8UC3);
 
     mName = mClassName;
     // OSC path for this actuator
-    mOscPath = "nop";
+    mOscPath = "ibr";
 
     mFrameNumber = 0;
 }
 
 /*************/
-atom::Message Actuator_Template::detect(vector< Capture_Ptr > pCaptures)
+atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
 {
     if (pCaptures.size() == 0)
         return mLastMessage;
@@ -44,7 +44,7 @@ atom::Message Actuator_Template::detect(vector< Capture_Ptr > pCaptures)
 }
 
 /*************/
-vector<Capture_Ptr> Actuator_Template::getOutput() const
+vector<Capture_Ptr> Actuator_IBR::getOutput() const
 {
     vector<Capture_Ptr> outputVec;
     outputVec.push_back(mCapture);
@@ -53,7 +53,7 @@ vector<Capture_Ptr> Actuator_Template::getOutput() const
 }
 
 /*************/
-void Actuator_Template::setParameter(atom::Message pMessage)
+void Actuator_IBR::setParameter(atom::Message pMessage)
 {
     setBaseParameter(pMessage);
 }

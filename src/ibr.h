@@ -20,21 +20,21 @@
 
 /*
  * @nop.h
- * The Actuator_Template class.
+ * The Actuator_IBR class.
  */
 
-#ifndef NOP_H
-#define NOP_H
+#ifndef IBR_H
+#define IBR_H
 
 #include "actuator.h"
 
  /*************/
-// Class Actuator_Template
-class Actuator_Template : public Actuator
+// Class Actuator_IBR
+class Actuator_IBR : public Actuator
 {
     public:
-        Actuator_Template();
-        Actuator_Template(int pParam);
+        Actuator_IBR();
+        Actuator_IBR(int pParam);
 
         static std::string getClassName() {return mClassName;}
         static std::string getDocumentation() {return mDocumentation;}
@@ -56,6 +56,6 @@ class Actuator_Template : public Actuator
         void make();
 };
 
-REGISTER_ACTUATOR(Actuator_Template)
+REGISTER_ACTUATOR(Actuator_IBR)
 
-#endif // NOP_H
+#endif // IBR_H

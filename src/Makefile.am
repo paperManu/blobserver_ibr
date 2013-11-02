@@ -3,12 +3,12 @@ AM_CPPFLAGS = \
 
 pluginsdir = $(prefix)/lib/blobserver-@LIBBLOBSERVER_API_VERSION@
 
-plugins_LTLIBRARIES = libactuatortemplate.la
+plugins_LTLIBRARIES = libactuatoribr.la
 
-libactuatortemplate_la_SOURCES = \
-	template.cpp
+libactuatoribr_la_SOURCES = \
+	ibr.cpp
 
-libactuatortemplate_la_CXXFLAGS = \
+libactuatoribr_la_CXXFLAGS = \
 	$(BLOBSERVER_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(OPENCV_CFLAGS) \
