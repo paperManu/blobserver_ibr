@@ -75,6 +75,14 @@ if test "x${have_atom}" = "xfalse" ; then
     AC_MSG_ERROR([Missing atom])
 fi
 
+# OpenImageIO
+AC_LANG_PUSH([C++])
+AC_CHECK_HEADER([OpenImageIO/imageio.h],
+    [HAVE_IMAGEIO=true],
+    [HAVE_IMAGEIO=false])
+AM_CONDITIONAL(IMAGEIO, test "$HAVE_IMAGEIO" = "true")
+AC_LANG_POP([C++])
+
 AC_CONFIG_FILES([
     Makefile
     src/Makefile

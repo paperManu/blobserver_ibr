@@ -42,8 +42,6 @@ class Actuator_IBR : public Actuator
         atom::Message detect(std::vector< Capture_Ptr > pCaptures);
         void setParameter(atom::Message pMessage);
 
-        std::vector<Capture_Ptr> getOutput() const;
-
     private:
         static std::string mClassName;
         static std::string mDocumentation;
@@ -51,9 +49,17 @@ class Actuator_IBR : public Actuator
         static unsigned int mSourceNbr;
         unsigned int mFrameNumber;
 
-        Capture_Ptr mCapture;
+        int mLatCells, mLongCells;
+        std::vector<std::vector<float>> mCellsSolidAngle;
+
+        std::string mDatabasePrefix;
+        bool mDatabaseReload;
+        std::vector<cv::Mat> mImageDatabase;
 
         void make();
+        void computeSolidAngles();
+        void loadDB();
+        void loadFakeDB();
 };
 
 REGISTER_ACTUATOR(Actuator_IBR)

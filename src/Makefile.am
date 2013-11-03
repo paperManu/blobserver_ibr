@@ -3,6 +3,7 @@ AM_CPPFLAGS = \
 
 pluginsdir = $(prefix)/lib/blobserver-@LIBBLOBSERVER_API_VERSION@
 
+if IMAGEIO
 plugins_LTLIBRARIES = libactuatoribr.la
 
 libactuatoribr_la_SOURCES = \
@@ -13,3 +14,7 @@ libactuatoribr_la_CXXFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(OPENCV_CFLAGS) \
 	$(LIBATOM_CFLAGS)
+
+libactuatoribr_la_LDFLAGS = \
+	-lOpenImageIO
+endif
