@@ -118,10 +118,17 @@ void Actuator_IBR::loadDB()
     char extension[] = "hdr";
 
     vector<string> fileList;
-    GError* error;
+    GError* error = NULL;
     GDir* directory;
 
     directory = g_dir_open((const gchar*)(string("./") + mDatabasePrefix).c_str(), 0, &error);
+    if (directory == NULL)
+    {
+        g_log(NULL, G_LOG_LEVEL_WARNING, "%s - Unable to open directory %s", mClassName.c_str(), mDatabasePrefix.c_str());
+        mDatabaseReload = false;
+        return;
+    }
+
     const gchar* filename;
     while ((filename = g_dir_read_name(directory)) != NULL)
     {
@@ -155,6 +162,8 @@ void Actuator_IBR::loadDB()
 
         g_log(NULL, G_LOG_LEVEL_DEBUG, "%s - Image %s loaded", mClassName.c_str(), file.c_str());
     });
+
+    g_dir_close(directory);
     
     mDatabaseReload = false;
 }
