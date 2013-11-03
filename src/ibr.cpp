@@ -133,6 +133,8 @@ void Actuator_IBR::loadDB()
         }
     }
 
+    std::sort(fileList.begin(), fileList.end());
+
     for_each (fileList.begin(), fileList.end(), [&] (string file)
     {
         ImageInput *in = ImageInput::create(file.c_str());
