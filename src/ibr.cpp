@@ -58,10 +58,11 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
         loadFakeDB();
     }
 
-    cv::Mat input = captures[0];
+    cv::Mat input;
+    captures[0].convertTo(input, CV_32F);
     float uStep = (float)input.cols / (float)mLongCells;
     float vStep = (float)input.rows / (float)mLatCells;
-    
+
     // Computing the luminance for each cell
     vector<vector<cv::Scalar>> lightProbe;
     for (int u = 0; u < mLongCells; ++u)
@@ -185,6 +186,22 @@ void Actuator_IBR::loadFakeDB()
             mImageDatabase.push_back(tmp);
         }
     }
+}
+
+/*************/
+void Actuator_IBR::saveImage(cv::Mat img, string filename)
+{
+    if (img.total() == 0)
+        return;
+
+    ImageOutput* out = ImageOutput::create(filename.c_str());
+    if (!out)
+        return;
+    ImageSpec spec(img.cols, img.rows, img.channels(), TypeDesc::FLOAT);
+    out->open(filename.c_str(), spec);
+    out->write_image(TypeDesc::FLOAT, img.data);
+    out->close();
+    delete out;
 }
 
 /*************/

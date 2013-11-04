@@ -60,6 +60,7 @@ class Actuator_IBR : public Actuator
         void computeSolidAngles();
         void loadDB();
         void loadFakeDB();
+        void saveImage(cv::Mat img, std::string filename = "ibr.hdr");
 };
 
 REGISTER_ACTUATOR(Actuator_IBR)
