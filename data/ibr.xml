@@ -1,13 +1,73 @@
 <Blobserver>
     <Flow>
         <Actuator>
-            <Type>Actuator_IBR</Type>
+            <Type>Actuator_MirrorBall</Type>
             <Param>
-                <Name>database</Name>
-                <Value>db</Value>
+                <Name>sphereDiameter</Name>
+                <Value>30</Value>
+            </Param>
+            <Param>
+                <Name>sphere</Name>
+                <Value>200 150 125</Value>
+            </Param>
+            <Param>
+                <Name>fov</Name>
+                <Value>22</Value>
+            </Param>
+            <Param>
+                <Name>threshold</Name>
+                <Value>4</Value>
             </Param>
         </Actuator>
         <Source>
+            <Type>Source_2D_Gige</Type>
+            <Subsource>0</Subsource>
+            <Param>
+                <Name>framerate</Name>
+                <Value>15</Value>
+            </Param>
+            <Param>
+                <Name>raw</Name>
+                <Value>1</Value>
+            </Param>
+            <Param>
+                <Name>binning</Name>
+                <Value>2</Value>
+            </Param>
+            <Param>
+                <Name>width</Name>
+                <Value>800</Value>
+            </Param>
+            <Param>
+                <Name>height</Name>
+                <Value>600</Value>
+            </Param>
+            <Param>
+                <Name>gain</Name>
+                <Value>0</Value>
+            </Param>
+            <Param>
+                <Name>gamma</Name>
+                <Value>1.0</Value>
+            </Param>
+            <Param>
+                <Name>whiteBalanceRed</Name>
+                <Value>512</Value>
+            </Param>
+            <Param>
+                <Name>whiteBalanceBlue</Name>
+                <Value>512</Value>
+            </Param>
+            <Param>
+                <Name>hdri</Name>
+                <Value>0.00003 3.0 4 8 1</Value>
+            </Param>
+            <Param>
+                <Name>scale</Name>
+                <Value>0.5</Value>
+            </Param>
+        </Source>
+        <!--<Source>
             <Type>Source_2D_OpenCV</Type>
             <Subsource>300</Subsource>
             <Param>
@@ -26,7 +86,7 @@
                 <Name>height</Name>
                 <Value>480</Value>
             </Param>
-        </Source>
+        </Source>-->
         <Client>
             <Address>localhost</Address>
             <Port>9000</Port>
@@ -35,5 +95,22 @@
             <Address>localhost</Address>
             <Port>9002</Port>
         </Server>
+    </Flow>
+    <Flow>
+        <Actuator>
+            <Type>Actuator_IBR</Type>
+            <Param>
+                <Name>database</Name>
+                <Value>db</Value>
+            </Param>
+        </Actuator>
+        <Source>
+            <Type>Source_2D_Shmdata</Type>
+            <Subsource>0</Subsource>
+            <Param>
+                <Name>location</Name>
+                <Value>/tmp/blobserver_1_mirrorball_0</Value>
+            </Param>
+        </Source>
     </Flow>
 </Blobserver>
