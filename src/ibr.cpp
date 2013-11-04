@@ -102,14 +102,18 @@ void Actuator_IBR::computeSolidAngles()
     float vStep = M_PI / (float)mLatCells;
 
     float latitude = 0.f; // This is not really latitude, as it starts at a pole
-    float longitute = 0.f;
+    float longitude = 0.f;
     for (int i = 0; i < mLongCells; ++i)
     {
         vector<float> solidAngles;
         for (int j = 0; j < mLongCells; ++j)
+        {
             solidAngles.push_back(abs(hStep * (cos(latitude) - cos(latitude + vStep))));
+            latitude += vStep;
+        }
 
         mCellsSolidAngle.push_back(solidAngles);
+        longitude += hStep;
     }
 }
 
