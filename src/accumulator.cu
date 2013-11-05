@@ -1,13 +1,39 @@
 #include "accumulator.h"
 
-#include <thrust/version.h>
+#include <thrust/copy.h>
 #include <iostream>
 
-int getThrustVersion()
+namespace ibr
 {
-    int major = THRUST_MAJOR_VERSION;
-    int minor = THRUST_MINOR_VERSION;
+    /*********/
+    Accumulator::Accumulator()
+    {
+    }
 
-    std::cout << "Thrust v" << major << "." << minor << std::endl;
-    return 0;
+    /*********/
+    Accumulator::~Accumulator()
+    {
+    }
+
+    /*********/
+    void Accumulator::accumulate(std::list<float> factors)
+    {
+    }
+
+    /*********/
+    void Accumulator::setImage(std::list<float> image, int index)
+    {
+        if (mhDatabase.size() < index + 1)
+            mhDatabase.resize(index);
+
+        mhDatabase.resize(image.size());
+        thrust::copy(image.begin(), image.end(), mhDatabase[index].begin());
+    }
+
+    /*********/
+    void Accumulator::setSolidAngles(std::list<float> values)
+    {
+        mhSolidAngles.resize(values.size());
+        thrust::copy(values.begin(), values.end(), mhSolidAngles.begin());
+    }
 }

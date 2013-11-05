@@ -22,4 +22,25 @@
  * @accumulator.h
  */
 
-int getThrustVersion();
+#include <list>
+#include <thrust/host_vector.h>
+#include <thrust/device_vector.h>
+
+namespace ibr
+{
+    class Accumulator
+    {
+    public:
+        Accumulator();
+        ~Accumulator();
+
+        void accumulate(std::list<float> factors);
+
+    private:
+        std::vector< thrust::device_vector<float> > mhDatabase;
+        thrust::device_vector<float> mhSolidAngles;
+
+        void setImage(std::list<float> image, int index);
+        void setSolidAngles(std::list<float> values);
+    };
+}

@@ -39,8 +39,6 @@ void Actuator_IBR::make()
 
     mDatabasePrefix = "";
     mDatabaseReload = false;
-
-    getThrustVersion();
 }
 
 /*************/
