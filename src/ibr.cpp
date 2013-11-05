@@ -1,4 +1,6 @@
 #include "ibr.h"
+#include "accumulator.h"
+
 #include <OpenImageIO/imageio.h>
 OIIO_NAMESPACE_USING
 
@@ -37,6 +39,8 @@ void Actuator_IBR::make()
 
     mDatabasePrefix = "";
     mDatabaseReload = false;
+
+    getThrustVersion();
 }
 
 /*************/

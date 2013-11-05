@@ -1,7 +1,15 @@
+include $(top_srcdir)/cuda.mk
+
 AM_CPPFLAGS = \
     -DG_LOG_DOMAIN=""
 
 pluginsdir = $(prefix)/lib/blobserver-@LIBBLOBSERVER_API_VERSION@
+libdir = $(prefix)/lib/blobserver-@LIBBLOBSERVER_API_VERSION@/thrust
+
+LINK = $(LIBTOOL) --mode=link $(CC) -o $@ $(CUDA_LDFLAGS) $(CUDA_LIBS)
+EXTRA_DIST = accumulator.cu
+lib_LTLIBRARIES = libaccumulator.la
+libaccumulator_la_SOURCES = accumulator.cu
 
 if IMAGEIO
 plugins_LTLIBRARIES = libactuatoribr.la
@@ -16,5 +24,7 @@ libactuatoribr_la_CXXFLAGS = \
 	$(LIBATOM_CFLAGS)
 
 libactuatoribr_la_LDFLAGS = \
+	$(top_builddir)/src/libaccumulator.la \
+	-lm $(CUDA_LDFLAGS) $(CUDA_LIBS) \
 	-lOpenImageIO
 endif

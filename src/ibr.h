@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Emmanuel Durand
+ * Copyright (C) 2013 Emmanuel Durand
  *
  * This file is part of blobserver.
  *
@@ -19,7 +19,7 @@
  */
 
 /*
- * @nop.h
+ * @ibr.h
  * The Actuator_IBR class.
  */
 

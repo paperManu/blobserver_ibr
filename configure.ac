@@ -83,6 +83,34 @@ AC_CHECK_HEADER([OpenImageIO/imageio.h],
 AM_CONDITIONAL(IMAGEIO, test "$HAVE_IMAGEIO" = "true")
 AC_LANG_POP([C++])
 
+# Cuda
+ARCH=`uname -m`
+if [[ $ARCH == "x86_64" ]];
+then
+    SUFFIX="64"
+else
+    SUFFIX=""
+fi
+AC_ARG_WITH([cuda],
+            [--with-cuda=PATH   prefix where cuda is installed
+            [default=/usr/local/cuda]])
+if test -n "$with_cuda"
+then
+    CUDA_CFLAGS="-I$with_cuda/include"
+    CUDA_LIBS="-lcudart"
+    CUDA_LDFLAGS="-L$with_cuda/lib$SUFFIX"
+    NVCC="$with_cuda/bin/nvcc"
+else
+    CUDA_CFLAGS="-I/usr/local/cuda/include"
+    CUDA_LIBS="-lcudart"
+    CUDA_LDFLAGS="-L/usr/local/cuda/lib$SUFFIX"
+    NVCC="nvcc"
+fi
+AC_SUBST(CUDA_CFLAGS)
+AC_SUBST(CUDA_LIBS)
+AC_SUBST(CUDA_LDFLAGS)
+AC_SUBST(NVCC)
+
 AC_CONFIG_FILES([
     Makefile
     src/Makefile
