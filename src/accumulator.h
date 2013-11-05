@@ -22,6 +22,9 @@
  * @accumulator.h
  */
 
+#ifndef ACCUMULATOR_H
+#define ACCUMULATOR_H
+
 #include <list>
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
@@ -44,3 +47,5 @@ namespace ibr
         void setSolidAngles(std::list<float> values);
     };
 }
+
+#endif

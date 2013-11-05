@@ -1,5 +1,4 @@
 #include "ibr.h"
-#include "accumulator.h"
 
 #include <OpenImageIO/imageio.h>
 OIIO_NAMESPACE_USING

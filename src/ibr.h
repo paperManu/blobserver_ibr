@@ -27,6 +27,7 @@
 #define IBR_H
 
 #include "actuator.h"
+#include "accumulator.h"
 
  /*************/
 // Class Actuator_IBR
@@ -55,6 +56,8 @@ class Actuator_IBR : public Actuator
         std::string mDatabasePrefix;
         bool mDatabaseReload;
         std::vector<cv::Mat> mImageDatabase;
+
+        ibr::Accumulator mAccumulator;
 
         void make();
         void computeSolidAngles();
