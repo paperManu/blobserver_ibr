@@ -25,7 +25,7 @@
 #ifndef ACCUMULATOR_H
 #define ACCUMULATOR_H
 
-#include <list>
+#include <vector>
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
 
@@ -37,14 +37,14 @@ namespace ibr
         Accumulator();
         ~Accumulator();
 
-        void accumulate(std::list<float> factors);
+        void setImage(std::vector<float> image, int index);
+        void setSolidAngles(std::vector<float> values);
+
+        void accumulate(std::vector<float> factors);
 
     private:
-        std::vector< thrust::device_vector<float> > mhDatabase;
-        thrust::device_vector<float> mhSolidAngles;
-
-        void setImage(std::list<float> image, int index);
-        void setSolidAngles(std::list<float> values);
+        std::vector< thrust::host_vector<float> > mhDatabase;
+        thrust::host_vector<float> mhSolidAngles;
     };
 }
 

@@ -8,6 +8,7 @@ namespace ibr
     /*********/
     Accumulator::Accumulator()
     {
+        mhDatabase.resize(128);
     }
 
     /*********/
@@ -16,22 +17,22 @@ namespace ibr
     }
 
     /*********/
-    void Accumulator::accumulate(std::list<float> factors)
+    void Accumulator::accumulate(std::vector<float> factors)
     {
     }
 
     /*********/
-    void Accumulator::setImage(std::list<float> image, int index)
+    void Accumulator::setImage(std::vector<float> image, int index)
     {
-        if (mhDatabase.size() < index + 1)
-            mhDatabase.resize(index);
+        if (index >= mhDatabase.size())
+            return;
 
-        mhDatabase.resize(image.size());
+        mhDatabase[index].resize(image.size());
         thrust::copy(image.begin(), image.end(), mhDatabase[index].begin());
     }
 
     /*********/
-    void Accumulator::setSolidAngles(std::list<float> values)
+    void Accumulator::setSolidAngles(std::vector<float> values)
     {
         mhSolidAngles.resize(values.size());
         thrust::copy(values.begin(), values.end(), mhSolidAngles.begin());

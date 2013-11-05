@@ -1,4 +1,5 @@
 #include "ibr.h"
+#include <list>
 
 #include <OpenImageIO/imageio.h>
 OIIO_NAMESPACE_USING
@@ -148,6 +149,7 @@ void Actuator_IBR::loadDB()
 
     std::sort(fileList.begin(), fileList.end());
 
+    int index = 0;
     for_each (fileList.begin(), fileList.end(), [&] (string file)
     {
         ImageInput *in = ImageInput::create(file.c_str());
@@ -167,6 +169,12 @@ void Actuator_IBR::loadDB()
         mImageDatabase.push_back(image);
 
         g_log(NULL, G_LOG_LEVEL_DEBUG, "%s - Image %s loaded", mClassName.c_str(), file.c_str());
+
+        std::vector<float> img;
+        img.resize(image.total() * image.channels());
+        memcpy(img.data(), image.data, image.total() * image.channels() * sizeof(float));
+        mAccumulator.setImage(img, index);
+        index++;
     });
 
     g_dir_close(directory);
