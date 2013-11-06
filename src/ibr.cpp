@@ -62,17 +62,17 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
 
     cv::Mat input;
     captures[0].convertTo(input, CV_32F);
-    float uStep = (float)input.cols / (float)mLongCells;
-    float vStep = (float)input.rows / (float)mLatCells;
+    float uStep = (float)input.rows / (float)mLatCells;
+    float vStep = (float)input.cols / (float)mLongCells;
 
     // Computing the luminance for each cell
     vector<vector<cv::Scalar>> lightProbe;
-    for (int u = 0; u < mLongCells; ++u)
+    for (int u = 0; u < mLatCells; ++u)
     {
         vector<cv::Scalar> light;
-        for (int v = 0; v < mLatCells; ++v)
+        for (int v = 0; v < mLongCells; ++v)
         {
-            cv::Rect rect(u * uStep, v * vStep, uStep, vStep);
+            cv::Rect rect(v * vStep, u * uStep, vStep, uStep);
             cv::Mat roi = input(rect);
             cv::Scalar mean = cv::mean(roi);
             mean *= mCellsSolidAngle[u][v];
@@ -83,9 +83,9 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
 
     // Accumulate the images
     cv::Mat accumulation = cv::Mat::zeros(mImageDatabase[0].size(), CV_MAKE_TYPE(CV_32F, mImageDatabase[0].channels()));
-    for (int u = 0; u < mLongCells; ++u)
-        for (int v = 0; v < mLatCells; ++v)
-            cv::addWeighted(accumulation, 1.0, mImageDatabase[u * mLatCells + v], lightProbe[u][v][0], 0.0, accumulation);
+    for (int u = 0; u < mLatCells; ++u)
+        for (int v = 0; v < mLongCells; ++v)
+            cv::addWeighted(accumulation, 1.0, mImageDatabase[u * mLongCells + v], lightProbe[u][v][0], 0.0, accumulation);
 
     mOutputBuffer = accumulation;
 
@@ -104,18 +104,18 @@ void Actuator_IBR::computeSolidAngles()
     float vStep = M_PI / (float)mLatCells;
 
     float latitude = 0.f; // This is not really latitude, as it starts at a pole
-    float longitude = 0.f;
-    for (int i = 0; i < mLongCells; ++i)
+    for (int i = 0; i < mLatCells; ++i)
     {
+        float longitude = 0.f;
         vector<float> solidAngles;
         for (int j = 0; j < mLongCells; ++j)
         {
             solidAngles.push_back(abs(hStep * (cos(latitude) - cos(latitude + vStep))));
-            latitude += vStep;
+            longitude += hStep;
         }
 
         mCellsSolidAngle.push_back(solidAngles);
-        longitude += hStep;
+        latitude += vStep;
     }
 }
 
@@ -186,14 +186,14 @@ void Actuator_IBR::loadDB()
 void Actuator_IBR::loadFakeDB()
 {
     mImageDatabase.clear();
-    float uStep = 640.f / (float)mLongCells;
-    float vStep = 480.f / (float)mLatCells;
-    for (int u = 0; u < mLongCells; ++u)
+    float uStep = 480.f / (float)mLatCells;
+    float vStep = 640.f / (float)mLongCells;
+    for (int u = 0; u < mLatCells; ++u)
     {
-        for (int v = 0; v < mLatCells; ++v)
+        for (int v = 0; v < mLongCells; ++v)
         {
             cv::Mat tmp = cv::Mat::zeros(480, 640, CV_32F);
-            cv::Rect rect(u * uStep, v * vStep, uStep, vStep);
+            cv::Rect rect(v * vStep, u * uStep, vStep, uStep);
             cv::Mat roi = tmp(rect);
             roi.setTo(1.f);
             mImageDatabase.push_back(tmp);
