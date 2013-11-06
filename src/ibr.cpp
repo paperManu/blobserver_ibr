@@ -67,6 +67,7 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
 
     // Computing the luminance for each cell
     vector<vector<cv::Scalar>> lightProbe;
+    vector<float> probe;
     for (int u = 0; u < mLatCells; ++u)
     {
         vector<cv::Scalar> light;
@@ -77,15 +78,24 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
             cv::Scalar mean = cv::mean(roi);
             mean *= mCellsSolidAngle[u][v];
             light.push_back(mean);
+
+            //for (int c = 0; c < roi.channels(); ++c) 
+            //    probe.push_back(mean[c]);
+            probe.push_back(mean[0]); // For now, we only use the first channel
         }
         lightProbe.push_back(light);
     }
 
+    mAccumulator.accumulate(probe);
+    vector<float> result = mAccumulator.getResult();
+
     // Accumulate the images
     cv::Mat accumulation = cv::Mat::zeros(mImageDatabase[0].size(), CV_MAKE_TYPE(CV_32F, mImageDatabase[0].channels()));
-    for (int u = 0; u < mLatCells; ++u)
-        for (int v = 0; v < mLongCells; ++v)
-            cv::addWeighted(accumulation, 1.0, mImageDatabase[u * mLongCells + v], lightProbe[u][v][0], 0.0, accumulation);
+    //for (int u = 0; u < mLatCells; ++u)
+    //    for (int v = 0; v < mLongCells; ++v)
+    //        cv::addWeighted(accumulation, 1.0, mImageDatabase[u * mLongCells + v], lightProbe[u][v][0], 0.0, accumulation);
+
+    memcpy(accumulation.data, result.data(), result.size() * sizeof(float));
 
     mOutputBuffer = accumulation;
 

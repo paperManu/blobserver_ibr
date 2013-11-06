@@ -111,10 +111,6 @@
                 <Name>height</Name>
                 <Value>480</Value>
             </Param>
-            <Param>
-                <Name>exposureTime</Name>
-                <Value>500</Value>
-            </Param>
         </Source>
     </Flow>
 </Blobserver>

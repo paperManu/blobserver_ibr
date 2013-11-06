@@ -41,10 +41,30 @@ namespace ibr
         void setSolidAngles(std::vector<float> values);
 
         void accumulate(std::vector<float> factors);
+        std::vector<float> getResult();
 
     private:
+        bool mIsUploaded;
+
         std::vector< thrust::host_vector<float> > mhDatabase;
+        std::vector< thrust::device_vector<float> > mdDatabase;
+
         thrust::host_vector<float> mhSolidAngles;
+        thrust::device_vector<float> mdSolidAngles;
+
+        thrust::host_vector<float> mhResult;
+    };
+
+    struct saxpy
+    {
+        const float a;
+        saxpy(float _a) : a(_a) {}
+
+        __host__ __device__
+        float operator()(const float& x, const float& y) const
+        {
+            return a * x + y;
+        }
     };
 }
 
