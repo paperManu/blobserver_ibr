@@ -111,6 +111,16 @@ AC_SUBST(CUDA_LIBS)
 AC_SUBST(CUDA_LDFLAGS)
 AC_SUBST(NVCC)
 
+AC_CHECK_PROG(HAVE_CUDA, nvcc, true, false)
+AM_CONDITIONAL(CUDA, test "$HAVE_CUDA" = "true")
+if test "$HAVE_CUDA" = "true"
+then
+    AC_DEFINE([HAVE_CUDA], [1], [Defined to 1 if CUDA is found])
+else
+    AC_DEFINE([HAVE_CUDA], [0], [Defined to 1 if CUDA is found])
+fi
+
+#-------------#
 AC_CONFIG_FILES([
     Makefile
     src/Makefile

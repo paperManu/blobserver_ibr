@@ -66,7 +66,8 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
     float vStep = (float)input.cols / (float)mLongCells;
 
     // Computing the luminance for each cell
-    vector<vector<cv::Scalar>> lightProbe;
+    cv::Mat accumulation = cv::Mat::zeros(mImageDatabase[0].size(), CV_MAKE_TYPE(CV_32F, mImageDatabase[0].channels()));
+#if HAVE_CUDA
     vector<float> probe;
     for (int u = 0; u < mLatCells; ++u)
     {
@@ -77,23 +78,36 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
             cv::Mat roi = input(rect);
             cv::Scalar mean = cv::mean(roi);
             mean *= mCellsSolidAngle[u][v];
-            light.push_back(mean);
 
             //for (int c = 0; c < roi.channels(); ++c) 
             //    probe.push_back(mean[c]);
             probe.push_back(mean[0]); // For now, we only use the first channel
         }
-        lightProbe.push_back(light);
     }
 
     mAccumulator.accumulate(probe);
     vector<float> result = mAccumulator.getResult();
+#else
+    vector<vector<cv::Scalar>> lightProbe;
+    for (int u = 0; u < mLatCells; ++u)
+    {
+        vector<cv::Scalar> light;
+        for (int v = 0; v < mLongCells; ++v)
+        {
+            cv::Rect rect(v * vStep, u * uStep, vStep, uStep);
+            cv::Mat roi = input(rect);
+            cv::Scalar mean = cv::mean(roi);
+            mean *= mCellsSolidAngle[u][v];
+            light.push_back(mean);
+        }
+        lightProbe.push_back(light);
+    }
 
     // Accumulate the images
-    cv::Mat accumulation = cv::Mat::zeros(mImageDatabase[0].size(), CV_MAKE_TYPE(CV_32F, mImageDatabase[0].channels()));
-    //for (int u = 0; u < mLatCells; ++u)
-    //    for (int v = 0; v < mLongCells; ++v)
-    //        cv::addWeighted(accumulation, 1.0, mImageDatabase[u * mLongCells + v], lightProbe[u][v][0], 0.0, accumulation);
+    for (int u = 0; u < mLatCells; ++u)
+        for (int v = 0; v < mLongCells; ++v)
+            cv::addWeighted(accumulation, 1.0, mImageDatabase[u * mLongCells + v], lightProbe[u][v][0], 0.0, accumulation);
+#endif
 
     memcpy(accumulation.data, result.data(), result.size() * sizeof(float));
 
@@ -176,15 +190,17 @@ void Actuator_IBR::loadDB()
         in->close();
         delete in;
 
-        mImageDatabase.push_back(image);
-
-        g_log(NULL, G_LOG_LEVEL_DEBUG, "%s - Image %s loaded", mClassName.c_str(), file.c_str());
-
+#if HAVE_CUDA
         std::vector<float> img;
         img.resize(image.total() * image.channels());
         memcpy(img.data(), image.data, image.total() * image.channels() * sizeof(float));
         mAccumulator.setImage(img, index);
         index++;
+#endif
+        mImageDatabase.push_back(image);
+
+        g_log(NULL, G_LOG_LEVEL_DEBUG, "%s - Image %s loaded", mClassName.c_str(), file.c_str());
+
     });
 
     g_dir_close(directory);
@@ -198,6 +214,7 @@ void Actuator_IBR::loadFakeDB()
     mImageDatabase.clear();
     float uStep = 480.f / (float)mLatCells;
     float vStep = 640.f / (float)mLongCells;
+    int index = 0;
     for (int u = 0; u < mLatCells; ++u)
     {
         for (int v = 0; v < mLongCells; ++v)
@@ -206,7 +223,15 @@ void Actuator_IBR::loadFakeDB()
             cv::Rect rect(v * vStep, u * uStep, vStep, uStep);
             cv::Mat roi = tmp(rect);
             roi.setTo(1.f);
+
+#if HAVE_CUDA
+            std::vector<float> img;
+            img.resize(tmp.total() * tmp.channels());
+            memcpy(img.data(), tmp.data, tmp.total() * tmp.channels() * sizeof(float));
+            mAccumulator.setImage(img, index);
+#endif
             mImageDatabase.push_back(tmp);
+            index++;
         }
     }
 }

@@ -1,5 +1,5 @@
 <Blobserver>
-    <!--<Flow>
+    <Flow>
         <Actuator>
             <Type>Actuator_MirrorBall</Type>
             <Param>
@@ -60,7 +60,7 @@
             </Param>
             <Param>
                 <Name>hdri</Name>
-                <Value>0.00003 3.0 4 8 1</Value>
+                <Value>0.00003 4.0 3 5 1</Value>
             </Param>
             <Param>
                 <Name>scale</Name>
@@ -75,7 +75,7 @@
             <Address>localhost</Address>
             <Port>9002</Port>
         </Server>
-    </Flow>-->
+    </Flow>
     <Flow>
         <Actuator>
             <Type>Actuator_IBR</Type>
@@ -84,15 +84,15 @@
                 <Value>db</Value>
             </Param>
         </Actuator>
-        <!--<Source>
+        <Source>
             <Type>Source_2D_Shmdata</Type>
             <Subsource>0</Subsource>
             <Param>
                 <Name>location</Name>
                 <Value>/tmp/blobserver_1_mirrorball_0</Value>
             </Param>
-        </Source>-->
-        <Source>
+        </Source>
+        <!--<Source>
             <Type>Source_2D_OpenCV</Type>
             <Subsource>300</Subsource>
             <Param>
@@ -111,6 +111,6 @@
                 <Name>height</Name>
                 <Value>480</Value>
             </Param>
-        </Source>
+        </Source>-->
     </Flow>
 </Blobserver>

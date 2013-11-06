@@ -6,10 +6,12 @@ AM_CPPFLAGS = \
 pluginsdir = $(prefix)/lib/blobserver-@LIBBLOBSERVER_API_VERSION@
 libdir = $(prefix)/lib/blobserver-@LIBBLOBSERVER_API_VERSION@/thrust
 
+if CUDA
 LINK = $(LIBTOOL) --mode=link $(CC) -o $@ $(CUDA_LDFLAGS) $(CUDA_LIBS)
 EXTRA_DIST = accumulator.cu
 lib_LTLIBRARIES = libaccumulator.la
 libaccumulator_la_SOURCES = accumulator.cu
+endif
 
 if IMAGEIO
 plugins_LTLIBRARIES = libactuatoribr.la

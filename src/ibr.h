@@ -26,6 +26,7 @@
 #ifndef IBR_H
 #define IBR_H
 
+#include "config.h"
 #include "actuator.h"
 #include "accumulator.h"
 
@@ -57,7 +58,9 @@ class Actuator_IBR : public Actuator
         bool mDatabaseReload;
         std::vector<cv::Mat> mImageDatabase;
 
+#if HAVE_CUDA
         ibr::Accumulator mAccumulator;
+#endif
 
         void make();
         void computeSolidAngles();
