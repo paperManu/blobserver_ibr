@@ -28,6 +28,7 @@ namespace ibr
                 thrust::device_vector<float> d = mhDatabase[i];
                 mdDatabase.push_back(d);
             }
+            mhDatabase.clear();
             mIsUploaded = true;
         }
 

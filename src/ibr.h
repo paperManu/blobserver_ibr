@@ -59,7 +59,7 @@ class Actuator_IBR : public Actuator
         std::vector<cv::Mat> mImageDatabase;
 
 #if HAVE_CUDA
-        ibr::Accumulator mAccumulator;
+        std::vector<ibr::Accumulator> mAccumulators;
 #endif
 
         void make();

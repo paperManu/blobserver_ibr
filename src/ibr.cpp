@@ -68,7 +68,8 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
     // Computing the luminance for each cell
     cv::Mat accumulation = cv::Mat::zeros(mImageDatabase[0].size(), CV_MAKE_TYPE(CV_32F, mImageDatabase[0].channels()));
 #if HAVE_CUDA
-    vector<float> probe;
+    vector<vector<float>> probe;
+    probe.resize(mAccumulators.size());
     for (int u = 0; u < mLatCells; ++u)
     {
         vector<cv::Scalar> light;
@@ -79,14 +80,22 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
             cv::Scalar mean = cv::mean(roi);
             mean *= mCellsSolidAngle[u][v];
 
-            //for (int c = 0; c < roi.channels(); ++c) 
-            //    probe.push_back(mean[c]);
-            probe.push_back(mean[0]); // For now, we only use the first channel
+            for (int c = 0; c < mAccumulators.size(); ++c) 
+                probe[c].push_back(mean[c]);
         }
     }
 
-    mAccumulator.accumulate(probe);
-    vector<float> result = mAccumulator.getResult();
+    vector<cv::Mat> channels;
+    channels.resize(mAccumulators.size());
+    for (int c = 0; c < mAccumulators.size(); ++c)
+    {
+        mAccumulators[c].accumulate(probe[c]);
+        vector<float> result = mAccumulators[c].getResult();
+        channels[c] = cv::Mat::zeros(mImageDatabase[0].size(), CV_32F);
+        memcpy(channels[c].data, result.data(), result.size() * sizeof(float));
+    }
+
+    cv::merge(channels, accumulation);
 #else
     vector<vector<cv::Scalar>> lightProbe;
     for (int u = 0; u < mLatCells; ++u)
@@ -109,7 +118,6 @@ atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
             cv::addWeighted(accumulation, 1.0, mImageDatabase[u * mLongCells + v], lightProbe[u][v][0], 0.0, accumulation);
 #endif
 
-    memcpy(accumulation.data, result.data(), result.size() * sizeof(float));
 
     mOutputBuffer = accumulation;
 
@@ -173,6 +181,10 @@ void Actuator_IBR::loadDB()
 
     std::sort(fileList.begin(), fileList.end());
 
+    mImageDatabase.clear();
+#if HAVE_CUDA
+    mAccumulators.clear();
+#endif
     int index = 0;
     for_each (fileList.begin(), fileList.end(), [&] (string file)
     {
@@ -191,10 +203,18 @@ void Actuator_IBR::loadDB()
         delete in;
 
 #if HAVE_CUDA
-        std::vector<float> img;
-        img.resize(image.total() * image.channels());
-        memcpy(img.data(), image.data, image.total() * image.channels() * sizeof(float));
-        mAccumulator.setImage(img, index);
+        if (mAccumulators.size() == 0)
+            mAccumulators.resize(spec.nchannels);
+
+        vector<cv::Mat> channels;
+        cv::split(image, channels);
+        for (int i = 0; i < channels.size(); ++i)
+        {
+            std::vector<float> img;
+            img.resize(channels[i].total());
+            memcpy(img.data(), channels[i].data, channels[i].total() * sizeof(float));
+            mAccumulators[i].setImage(img, index);
+        }
         index++;
 #endif
         mImageDatabase.push_back(image);
@@ -212,6 +232,11 @@ void Actuator_IBR::loadDB()
 void Actuator_IBR::loadFakeDB()
 {
     mImageDatabase.clear();
+#if HAVE_CUDA
+    mAccumulators.clear();
+    mAccumulators.resize(1);
+#endif
+
     float uStep = 480.f / (float)mLatCells;
     float vStep = 640.f / (float)mLongCells;
     int index = 0;
@@ -226,9 +251,9 @@ void Actuator_IBR::loadFakeDB()
 
 #if HAVE_CUDA
             std::vector<float> img;
-            img.resize(tmp.total() * tmp.channels());
-            memcpy(img.data(), tmp.data, tmp.total() * tmp.channels() * sizeof(float));
-            mAccumulator.setImage(img, index);
+            img.resize(tmp.total());
+            memcpy(img.data(), tmp.data, tmp.total() * sizeof(float));
+            mAccumulators[0].setImage(img, index);
 #endif
             mImageDatabase.push_back(tmp);
             index++;
