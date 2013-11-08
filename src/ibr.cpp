@@ -42,6 +42,11 @@ void Actuator_IBR::make()
 }
 
 /*************/
+Actuator_IBR::~Actuator_IBR()
+{
+}
+
+/*************/
 atom::Message Actuator_IBR::detect(vector< Capture_Ptr > pCaptures)
 {
     vector<cv::Mat> captures = captureToMat(pCaptures);
@@ -186,7 +191,7 @@ void Actuator_IBR::loadDB()
     mAccumulators.clear();
 #endif
     int index = 0;
-    for_each (fileList.begin(), fileList.end(), [&] (string file)
+    for_each (fileList.begin(), fileList.end(), [&] (string& file)
     {
         ImageInput *in = ImageInput::create(file.c_str());
         if (!in)
@@ -204,7 +209,13 @@ void Actuator_IBR::loadDB()
 
 #if HAVE_CUDA
         if (mAccumulators.size() == 0)
+        {
             mAccumulators.resize(spec.nchannels);
+            for_each (mAccumulators.begin(), mAccumulators.end(), [&] (ibr::Accumulator& a)
+            {
+                a.setDatabaseSize(fileList.size());
+            });
+        }
 
         vector<cv::Mat> channels;
         cv::split(image, channels);
@@ -235,6 +246,7 @@ void Actuator_IBR::loadFakeDB()
 #if HAVE_CUDA
     mAccumulators.clear();
     mAccumulators.resize(1);
+    mAccumulators[0].setDatabaseSize(mLatCells * mLongCells);
 #endif
 
     float uStep = 480.f / (float)mLatCells;

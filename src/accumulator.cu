@@ -6,6 +6,19 @@
 namespace ibr
 {
     /*********/
+    struct saxpy
+    {
+        const float a;
+        saxpy(float _a) : a(_a) {}
+
+        __host__ __device__
+        float operator()(const float& x, const float& y) const
+        {
+            return a * x + y;
+        }
+    };
+
+    /*********/
     Accumulator::Accumulator()
     {
         mIsUploaded = false;
@@ -15,6 +28,14 @@ namespace ibr
     /*********/
     Accumulator::~Accumulator()
     {
+    }
+
+    /*********/
+    void Accumulator::setDatabaseSize(int size)
+    {
+        if (size < 1)
+            return;
+        mhDatabase.resize(size);
     }
 
     /*********/

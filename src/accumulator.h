@@ -37,6 +37,7 @@ namespace ibr
         Accumulator();
         ~Accumulator();
 
+        void setDatabaseSize(int size);
         void setImage(std::vector<float> image, int index);
         void setSolidAngles(std::vector<float> values);
 
@@ -53,18 +54,6 @@ namespace ibr
         thrust::device_vector<float> mdSolidAngles;
 
         thrust::host_vector<float> mhResult;
-    };
-
-    struct saxpy
-    {
-        const float a;
-        saxpy(float _a) : a(_a) {}
-
-        __host__ __device__
-        float operator()(const float& x, const float& y) const
-        {
-            return a * x + y;
-        }
     };
 }
 

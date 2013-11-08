@@ -37,6 +37,7 @@ class Actuator_IBR : public Actuator
     public:
         Actuator_IBR();
         Actuator_IBR(int pParam);
+        ~Actuator_IBR();
 
         static std::string getClassName() {return mClassName;}
         static std::string getDocumentation() {return mDocumentation;}
