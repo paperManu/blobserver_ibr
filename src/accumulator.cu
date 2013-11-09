@@ -41,17 +41,7 @@ namespace ibr
     /*********/
     void Accumulator::accumulate(std::vector<float> factors)
     {
-        if (!mIsUploaded)
-        {
-            mdDatabase.clear();
-            for (int i = 0; i < mhDatabase.size(); ++i)
-            {
-                thrust::device_vector<float> d = mhDatabase[i];
-                mdDatabase.push_back(d);
-            }
-            mhDatabase.clear();
-            mIsUploaded = true;
-        }
+        uploadImages(factors);
 
         if (mdDatabase.size() == 0)
             return;
@@ -59,6 +49,12 @@ namespace ibr
         thrust::device_vector<float> dOutput(mdDatabase[0].size());
         for (int i = 0; i < factors.size() && i < mdDatabase.size(); ++i)
             thrust::transform(mdDatabase[i].begin(), mdDatabase[i].end(), dOutput.begin(), dOutput.begin(), saxpy(factors[i]));
+
+        for (int i = mdDatabase.size(); i < factors.size(); ++i)
+        {
+            thrust::device_vector<float> d = mhDatabase[i];
+            thrust::transform(d.begin(), d.end(), dOutput.begin(), dOutput.begin(), saxpy(factors[i]));
+        }
 
         mhResult.resize(dOutput.size());
         mhResult = dOutput;
@@ -90,5 +86,48 @@ namespace ibr
         mhSolidAngles.resize(values.size());
         thrust::copy(values.begin(), values.end(), mhSolidAngles.begin());
         mdSolidAngles = mhSolidAngles;
+    }
+
+    /*********/
+    void Accumulator::uploadImages(std::vector<float> factors)
+    {
+        if (!mIsUploaded)
+        {
+            mdDatabase.clear();
+            for (int i = 0; i < mhDatabase.size(); ++i)
+            {
+                size_t freeMem, totalMem;
+                cudaMemGetInfo(&freeMem, &totalMem);
+                if (freeMem < mhDatabase[i].capacity() * sizeof(float))
+                    continue;
+
+                thrust::device_vector<float> d = mhDatabase[i];
+                //mdDatabase.push_back(d);
+                mdDatabase[i] = d;
+            }
+
+            mIsUploaded = true;
+            prepareOmniSource();
+        }
+    }
+
+    /*********/
+    void Accumulator::prepareOmniSource()
+    {
+        std::vector<float> factors;
+        for (int i = 0; i < mhDatabase.size(); ++i)
+            factors.push_back(1.f);
+
+        thrust::device_vector<float> dOutput(mdDatabase[0].size());
+        for (int i = 0; i < factors.size() && i < mdDatabase.size(); ++i)
+            thrust::transform(mdDatabase[i].begin(), mdDatabase[i].end(), dOutput.begin(), dOutput.begin(), saxpy(factors[i]));
+
+        for (int i = mdDatabase.size(); i < factors.size(); ++i)
+        {
+            thrust::device_vector<float> d = mhDatabase[i];
+            thrust::transform(d.begin(), d.end(), dOutput.begin(), dOutput.begin(), saxpy(factors[i]));
+        }
+
+        mdOmniUnitary = dOutput;
     }
 }

@@ -26,6 +26,7 @@
 #define ACCUMULATOR_H
 
 #include <vector>
+#include <map>
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
 
@@ -48,12 +49,16 @@ namespace ibr
         bool mIsUploaded;
 
         std::vector< thrust::host_vector<float> > mhDatabase;
-        std::vector< thrust::device_vector<float> > mdDatabase;
+        std::map< int, thrust::device_vector<float> > mdDatabase;
+        thrust::device_vector<float> mdOmniUnitary;
 
         thrust::host_vector<float> mhSolidAngles;
         thrust::device_vector<float> mdSolidAngles;
 
         thrust::host_vector<float> mhResult;
+
+        void uploadImages(std::vector<float> factors);
+        void prepareOmniSource();
     };
 }
 
